@@ -1,0 +1,24 @@
+{
+  "name": "mml2smf",
+  "version": "0.0.3",
+  "description": "Simple MML to Standard MIDI File converter",
+  "main": "es5/main.js",
+  "bin": "es5/main.js",
+  "author": "Katsuomi Kobayashi",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src --out-dir es5",
+    "watch": "babel src --out-dir es5 --watch",
+    "start": "node es5/main.js",
+    "test": "mocha --compilers js:babel/register"
+  },
+  "dependencies": {
+    "fs": "*",
+    "minimist": "*"
+  },
+  "devDependencies": {
+    "babel": "*",
+    "uglifyjs": "*",
+    "mocha": "*"
+  }
+}
