@@ -5,6 +5,8 @@
   "main": "es5/main.js",
   "bin": "es5/main.js",
   "author": "Katsuomi Kobayashi",
+  "repository": "https://github.com/KatsuomiK/mml2smf",
+  "homepage": "http://framesynthesis.com/",
   "license": "MIT",
   "scripts": {
     "build": "babel src --out-dir es5",

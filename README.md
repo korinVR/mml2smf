@@ -1,14 +1,18 @@
 # Simple MML to Standard MIDI File converter
 
-This tool is a part of in-development synthesis.js.
+This tool is a part of in-development [synthesis.js](https://github.com/KatsuomiK/synthesis.js). The features are very limited for now.
 
 ## Setup
 
 $ npm install -g mml2smf
 
+## Usage
+
+$ mml2smf "t140 o5l8q7 ccggaag4 ffeeddc4; o4l8 cgegcgeg >b<gfg>b<gc4" -o test.mid
+
 ## MML
 
-command|mml
+command|MML
 -------|---
 notes|c, d, e, f, g, a, b, +, -
 octave|o[octave], &lt;, &gt;
@@ -24,9 +28,9 @@ To launch:
 
 $ npm start
 
-To build:
+To watch:
 
-$ npm run build
+$ npm run watch
 
 # License
 
