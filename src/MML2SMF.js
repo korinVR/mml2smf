@@ -1,5 +1,7 @@
 export default class MML2SMF {
-	convert(mml) {
+	convert(mml, timebase = 480) {
+		this.startTick = 0;
+		
 		let trackMMLs = mml.split(";");
 		
 		let trackNum = trackMMLs.length;
@@ -7,7 +9,7 @@ export default class MML2SMF {
 			throw new Error("over 16 tracks");
 		}
 		
-		this.resolution = 480;
+		this.timebase = timebase;
 		let smfFormat = (trackNum == 1) ? 0 : 1;
 		
 		let smf = [
@@ -16,8 +18,8 @@ export default class MML2SMF {
 			0x00, smfFormat, 
 			(trackNum >> 8) & 0xff,
 			trackNum & 0xff,
-			(this.resolution >> 8) & 0xff,
-			this.resolution & 0xff
+			(this.timebase >> 8) & 0xff,
+			this.timebase & 0xff
 		];
 		
 		for (let i = 0; i < trackNum; i++) {
@@ -41,8 +43,10 @@ export default class MML2SMF {
 		const abcdefg = [9, 11, 0, 2, 4, 5, 7];
 		
 		let trackData = [];
-		let tick = this.resolution;
-		let resolution = this.resolution;
+		let tick = this.timebase;
+		let timebase = this.timebase;
+		
+		let currentTick = 0;
 		
 		let restTick = 0;
 		
@@ -97,7 +101,7 @@ export default class MML2SMF {
 				// read note length
 				if (isNextInt()) {
 					let length = readInt();
-					stepTime = resolution * 4 / length;
+					stepTime = timebase * 4 / length;
 				} else {
 					stepTime = tick;
 				}
@@ -143,7 +147,7 @@ export default class MML2SMF {
 		}
 		
 		while (p < mml.length) {
-			if (!isNextChar("cdefgabro<>lqt \n\r\t")) {
+			if (!isNextChar("cdefgabro<>lqtvE? \n\r\t")) {
 				error(`syntax error '${readChar()}'`);
 			}
 			let command = readChar();
@@ -181,12 +185,16 @@ export default class MML2SMF {
 					writeDeltaTick(gateTime);
 					trackData.push(0x80 | channel, note, 0);
 					restTick = stepTime - gateTime;
+					
+					currentTick += stepTime;
 					break;
 
 				case "r":
 					{
 						let stepTime = readNoteLength();
 						restTick += stepTime;
+						
+						currentTick += stepTime;
 					}
 					break;
 
@@ -220,7 +228,7 @@ export default class MML2SMF {
 						if (isNextValue()) {
 							length = readValue();
 						}
-						tick = this.resolution * 4 / length;
+						tick = this.timebase * 4 / length;
 					}
 					break;
 					
@@ -253,9 +261,48 @@ export default class MML2SMF {
 							(quarterMicroseconds) & 0xff);
 					}
 					break;
+				
+				case "v":
+					if (!isNextValue()) {
+						error("no volume value");
+					} else {
+						let volume = readValue();
+
+						if (volume < 0 || volume > 127) {
+							error("illegal volume");
+						}
+
+						writeDeltaTick(restTick);
+						trackData.push(0xb0 | channel, 7, volume);
+					}
+					break;
+				
+				case "E":
+					if (!isNextValue()) {
+						error("no expression value");
+					} else {
+						let expression = readValue();
+
+						if (expression < 0 || expression > 127) {
+							error("illegal expression");
+						}
+
+						writeDeltaTick(restTick);
+						trackData.push(0xb0 | channel, 11, expression);
+					}
+					break;
+				
+				case "?":
+					// get start tick
+					this.startTick = currentTick;
+					break;
 			}
 		}
 		
 		return trackData;
+	}
+	
+	getStartTick() {
+		return this.startTick;
 	}
 }

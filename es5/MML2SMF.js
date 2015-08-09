@@ -16,6 +16,10 @@ var MML2SMF = (function () {
 	_createClass(MML2SMF, [{
 		key: "convert",
 		value: function convert(mml) {
+			var timebase = arguments.length <= 1 || arguments[1] === undefined ? 480 : arguments[1];
+
+			this.startTick = 0;
+
 			var trackMMLs = mml.split(";");
 
 			var trackNum = trackMMLs.length;
@@ -23,10 +27,10 @@ var MML2SMF = (function () {
 				throw new Error("over 16 tracks");
 			}
 
-			this.resolution = 480;
+			this.timebase = timebase;
 			var smfFormat = trackNum == 1 ? 0 : 1;
 
-			var smf = [0x4d, 0x54, 0x68, 0x64, 0x00, 0x00, 0x00, 0x06, 0x00, smfFormat, trackNum >> 8 & 0xff, trackNum & 0xff, this.resolution >> 8 & 0xff, this.resolution & 0xff];
+			var smf = [0x4d, 0x54, 0x68, 0x64, 0x00, 0x00, 0x00, 0x06, 0x00, smfFormat, trackNum >> 8 & 0xff, trackNum & 0xff, this.timebase >> 8 & 0xff, this.timebase & 0xff];
 
 			for (var i = 0; i < trackNum; i++) {
 				var trackData = this.createTrackData(trackMMLs[i], i);
@@ -44,8 +48,10 @@ var MML2SMF = (function () {
 			var abcdefg = [9, 11, 0, 2, 4, 5, 7];
 
 			var trackData = [];
-			var tick = this.resolution;
-			var resolution = this.resolution;
+			var tick = this.timebase;
+			var timebase = this.timebase;
+
+			var currentTick = 0;
 
 			var restTick = 0;
 
@@ -100,7 +106,7 @@ var MML2SMF = (function () {
 					// read note length
 					if (isNextInt()) {
 						var _length = readInt();
-						stepTime = resolution * 4 / _length;
+						stepTime = timebase * 4 / _length;
 					} else {
 						stepTime = tick;
 					}
@@ -146,7 +152,7 @@ var MML2SMF = (function () {
 			}
 
 			while (p < mml.length) {
-				if (!isNextChar("cdefgabro<>lqt \n\r\t")) {
+				if (!isNextChar("cdefgabro<>lqtvE? \n\r\t")) {
 					error("syntax error '" + readChar() + "'");
 				}
 				var command = readChar();
@@ -184,12 +190,16 @@ var MML2SMF = (function () {
 						writeDeltaTick(gateTime);
 						trackData.push(0x80 | channel, note, 0);
 						restTick = stepTime - gateTime;
+
+						currentTick += stepTime;
 						break;
 
 					case "r":
 						{
 							var _stepTime = readNoteLength();
 							restTick += _stepTime;
+
+							currentTick += _stepTime;
 						}
 						break;
 
@@ -223,7 +233,7 @@ var MML2SMF = (function () {
 							if (isNextValue()) {
 								_length2 = readValue();
 							}
-							tick = this.resolution * 4 / _length2;
+							tick = this.timebase * 4 / _length2;
 						}
 						break;
 
@@ -253,10 +263,50 @@ var MML2SMF = (function () {
 							trackData.push(0xff, 0x51, 0x03, quarterMicroseconds >> 16 & 0xff, quarterMicroseconds >> 8 & 0xff, quarterMicroseconds & 0xff);
 						}
 						break;
+
+					case "v":
+						if (!isNextValue()) {
+							error("no volume value");
+						} else {
+							var volume = readValue();
+
+							if (volume < 0 || volume > 127) {
+								error("illegal volume");
+							}
+
+							writeDeltaTick(restTick);
+							trackData.push(0xb0 | channel, 7, volume);
+						}
+						break;
+
+					case "E":
+						if (!isNextValue()) {
+							error("no expression value");
+						} else {
+							var expression = readValue();
+
+							if (expression < 0 || expression > 127) {
+								error("illegal expression");
+							}
+
+							writeDeltaTick(restTick);
+							trackData.push(0xb0 | channel, 11, expression);
+						}
+						break;
+
+					case "?":
+						// get start tick
+						this.startTick = currentTick;
+						break;
 				}
 			}
 
 			return trackData;
+		}
+	}, {
+		key: "getStartTick",
+		value: function getStartTick() {
+			return this.startTick;
 		}
 	}]);
 
