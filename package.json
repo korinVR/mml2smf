@@ -1,8 +1,8 @@
 {
   "name": "mml2smf",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "MML to Standard MIDI File converter",
-  "main": "es5/main.js",
+  "main": "es5/mml2smf.js",
   "bin": "es5/main.js",
   "author": "Katsuomi Kobayashi",
   "repository": "https://github.com/KatsuomiK/mml2smf",

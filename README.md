@@ -1,20 +1,33 @@
 # MML to Standard MIDI File converter
 
-This tool is a part of in-development [synthesis.js](https://github.com/KatsuomiK/synthesis.js). The features are very limited for now.
+This module is created for in-development MIDI synthesizer [synthesis.js](https://github.com/KatsuomiK/synthesis.js), but it could be used for general use cases.
 
-## Setup
-
-```bash
-$ npm install -g mml2smf
-```
+The features are very limited for now.
 
 ## Usage
 
+### From command line
+
 ```bash
+$ npm install -g mml2smf
+
 $ mml2smf test.mml
 $ mml2smf test.mml -o output.mid
 $ mml2smf -m cdefg -o test.mid
 $ mml2smf -m "t140 o5l8q7 ccggaag4 ffeeddc4; o4l8 cgegcgeg >b<gfg>b<gc4" -o test.mid
+```
+
+### From JavaScript
+
+Requires [Babel polyfill](https://babeljs.io/docs/usage/polyfill/)
+
+```js
+require("babel/polyfill");
+
+var MML2SMF = require("mml2smf");
+
+var mml2smf = new MML2SMF();
+var smf = mml2smf.convert("cdefg"); // Uint8Array
 ```
 
 ## MML
