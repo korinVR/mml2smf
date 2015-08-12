@@ -22,14 +22,14 @@ $ mml2smf -m "t140 o5l8q7 ccggaag4 ffeeddc4; o4l8 cgegcgeg >b<gfg>b<gc4" -o test
 command|MML
 -------|---
 Notes|c, d, e, f, g, a, b, +, -
-Octave|o[octave], &lt;, &gt; (4)
-Note Length|l[note length] (4)
-Tempo|t[tempo]
-Gate Time|q[1-8] (6)
-Velocity|u[0-127] (100)
-Channel Volume|v[0-127]
-Pan|p[-64-63]
-Expression Controller|E[0-127]
+Octave|o\[octave\], &lt;, &gt; (4)
+Note Length|l\[note length\] (4)
+Tempo|t\[tempo\]
+Gate Time|q\[1-8\] (6)
+Velocity|u\[0-127\] (100)
+Channel Volume|v\[0-127\]
+Pan|p\[-64-63\]
+Expression Controller|E\[0-127\]
 Next Track|;
 Tie|^
 
