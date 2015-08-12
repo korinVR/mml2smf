@@ -59,6 +59,8 @@ var MML2SMF = (function () {
 			var OCTAVE_MAX = 10;
 			var octave = 4;
 
+			var velocity = 100;
+
 			var q = 6;
 
 			var p = 0;
@@ -152,7 +154,7 @@ var MML2SMF = (function () {
 			}
 
 			while (p < mml.length) {
-				if (!isNextChar("cdefgabro<>lqtvE? \n\r\t")) {
+				if (!isNextChar("cdefgabro<>lqutvpE? \n\r\t")) {
 					error("syntax error '" + readChar() + "'");
 				}
 				var command = readChar();
@@ -183,7 +185,6 @@ var MML2SMF = (function () {
 
 						var stepTime = readNoteLength();
 						var gateTime = Math.round(stepTime * q / 8);
-						var velocity = 96;
 
 						writeDeltaTick(restTick);
 						trackData.push(0x90 | channel, note, velocity);
@@ -242,7 +243,18 @@ var MML2SMF = (function () {
 							if (isNextValue()) {
 								q = readValue();
 								if (q < 1 || q > 8) {
-									error("illegal q value");
+									error("q value is out of range (1-8)");
+								}
+							}
+						}
+						break;
+
+					case "u":
+						{
+							if (isNextValue()) {
+								velocity = readValue();
+								if (velocity < 0 || velocity > 127) {
+									error("velocity value is out of range (0-127)");
 								}
 							}
 						}
@@ -271,11 +283,26 @@ var MML2SMF = (function () {
 							var volume = readValue();
 
 							if (volume < 0 || volume > 127) {
-								error("illegal volume");
+								error("volume value is out of range (0-127)");
 							}
 
 							writeDeltaTick(restTick);
 							trackData.push(0xb0 | channel, 7, volume);
+						}
+						break;
+
+					case "p":
+						if (!isNextValue()) {
+							error("no panpot value");
+						} else {
+							var pan = readValue();
+
+							if (pan < -64 || pan > 63) {
+								error("pan value is out of range (-64-63)");
+							}
+
+							writeDeltaTick(restTick);
+							trackData.push(0xb0 | channel, 10, pan + 64);
 						}
 						break;
 
@@ -286,7 +313,7 @@ var MML2SMF = (function () {
 							var expression = readValue();
 
 							if (expression < 0 || expression > 127) {
-								error("illegal expression");
+								error("expression value is out of range (0-127)");
 							}
 
 							writeDeltaTick(restTick);
