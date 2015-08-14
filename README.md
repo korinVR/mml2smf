@@ -19,11 +19,7 @@ $ mml2smf -m "t140 o5l8q7 ccggaag4 ffeeddc4; o4l8 cgegcgeg >b<gfg>b<gc4" -o test
 
 ### From JavaScript
 
-Requires [Babel polyfill](https://babeljs.io/docs/usage/polyfill/)
-
 ```js
-require("babel/polyfill");
-
 var MML2SMF = require("mml2smf");
 
 var mml2smf = new MML2SMF();

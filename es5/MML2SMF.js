@@ -70,7 +70,7 @@ var MML2SMF = (function () {
 					return false;
 				}
 				var c = mml.charAt(p);
-				return candidates.includes(c);
+				return candidates.indexOf(c) >= 0;
 			}
 
 			function readChar() {

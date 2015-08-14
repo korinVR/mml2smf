@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import "babel/polyfill";
+// import "babel/polyfill";
 
 import fs from "fs";
 import minimist from "minimist";
@@ -55,7 +55,7 @@ if (argv.timebase) {
 // display usage
 if (!mml) {
 	console.log(`
-mml2smf version 0.0.7 - MML to Standard MIDI File converter
+mml2smf version 0.0.8 - MML to Standard MIDI File converter
 
 usage:
 	mml2smf [MML file]

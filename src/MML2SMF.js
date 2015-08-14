@@ -65,7 +65,7 @@ export default class MML2SMF {
 				return false;
 			}
 			let c = mml.charAt(p);
-			return candidates.includes(c);
+			return candidates.indexOf(c) >= 0;
 		}
 		
 		function readChar() {

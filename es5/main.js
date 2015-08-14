@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+
+
+// import "babel/polyfill";
+
 "use strict";
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-require("babel/polyfill");
 
 var _fs = require("fs");
 
@@ -64,7 +66,7 @@ if (argv.timebase) {
 
 // display usage
 if (!mml) {
-	console.log("\nmml2smf version 0.0.6 - MML to Standard MIDI File converter\n\nusage:\n\tmml2smf [MML file]\n\tmml2smf [MML file] -o [.mid file]\n\tmml2smf -m [MML] -o [.mid file]\noptions:\n\t--timebase [timebase] (default=480)\n");
+	console.log("\nmml2smf version 0.0.8 - MML to Standard MIDI File converter\n\nusage:\n\tmml2smf [MML file]\n\tmml2smf [MML file] -o [.mid file]\n\tmml2smf -m [MML] -o [.mid file]\noptions:\n\t--timebase [timebase] (default=480)\n");
 	process.exit();
 }
 
