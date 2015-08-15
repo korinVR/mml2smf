@@ -149,7 +149,7 @@ export default class MML2SMF {
 		}
 		
 		while (p < mml.length) {
-			if (!isNextChar("cdefgabro<>lqutvpEB@? \n\r\t")) {
+			if (!isNextChar("cdefgabro<>lqutvpEBD@? \n\r\t")) {
 				error(`syntax error '${readChar()}'`);
 			}
 			let command = readChar();
@@ -358,6 +358,20 @@ export default class MML2SMF {
 
 					writeDeltaTick(restTick);
 					trackData.push(0xc0 | channel, programNumber);
+					break;
+				
+				case "D":
+					if (!isNextValue()) {
+						error("no pressure value");
+					}
+					let pressure = readValue();
+
+					if (pressure < 0 || pressure > 127) {
+						error("illegal pressure number (0-127)");
+					}
+
+					writeDeltaTick(restTick);
+					trackData.push(0xd0 | channel, pressure);
 					break;
 				
 				case "?":
