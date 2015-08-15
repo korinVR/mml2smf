@@ -39,6 +39,7 @@ Velocity|u\[0-127\] (100)
 Channel Volume|v\[0-127\]
 Pan|p\[-64-63\]
 Expression Controller|E\[0-127\]
+Control Change|B\[0-119\],\[0-127\]
 Next Track|;
 Tie|^
 

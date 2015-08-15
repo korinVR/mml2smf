@@ -149,7 +149,7 @@ export default class MML2SMF {
 		}
 		
 		while (p < mml.length) {
-			if (!isNextChar("cdefgabro<>lqutvpE? \n\r\t")) {
+			if (!isNextChar("cdefgabro<>lqutvpEB? \n\r\t")) {
 				error(`syntax error '${readChar()}'`);
 			}
 			let command = readChar();
@@ -317,6 +317,33 @@ export default class MML2SMF {
 						writeDeltaTick(restTick);
 						trackData.push(0xb0 | channel, 11, expression);
 					}
+					break;
+				
+				case "B":
+					if (!isNextValue()) {
+						error("no parameter");
+					}
+					let controlNumber = readValue();
+					
+					if (!isNextChar(",")) {
+						error("control change requires two parameter");
+					}
+					readChar();
+					
+					if (!isNextValue()) {
+						error("no value");
+					}
+					let value = readValue();
+
+					if (controlNumber < 0 || controlNumber > 119) {
+						error("control number is out of range (0-119)");
+					}
+					if (value < 0 || value > 127) {
+						error("controller value is out of range (0-127)");
+					}
+
+					writeDeltaTick(restTick);
+					trackData.push(0xb0 | channel, controlNumber, value);
 					break;
 				
 				case "?":

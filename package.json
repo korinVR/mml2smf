@@ -18,7 +18,8 @@
     "minimist": "*"
   },
   "devDependencies": {
-    "uglifyjs": "*",
-    "mocha": "*"
+    "babel": "^5.8.21",
+    "mocha": "*",
+    "uglifyjs": "*"
   }
 }
