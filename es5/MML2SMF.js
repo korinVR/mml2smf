@@ -154,7 +154,7 @@ var MML2SMF = (function () {
 			}
 
 			while (p < mml.length) {
-				if (!isNextChar("cdefgabro<>lqutvpEB? \n\r\t")) {
+				if (!isNextChar("cdefgabro<>lqutvpEB@? \n\r\t")) {
 					error("syntax error '" + readChar() + "'");
 				}
 				var command = readChar();
@@ -346,6 +346,20 @@ var MML2SMF = (function () {
 
 						writeDeltaTick(restTick);
 						trackData.push(0xb0 | channel, controlNumber, value);
+						break;
+
+					case "@":
+						if (!isNextValue()) {
+							error("no program number");
+						}
+						var programNumber = readValue();
+
+						if (programNumber < 0 || programNumber > 127) {
+							error("illegal program number (0-127)");
+						}
+
+						writeDeltaTick(restTick);
+						trackData.push(0xc0 | channel, programNumber);
 						break;
 
 					case "?":
