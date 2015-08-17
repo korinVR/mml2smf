@@ -57,6 +57,7 @@ export default class MML2SMF {
 		let velocity = 100;
 		
 		let q = 6;
+		let keyShift = 0;
 		
 		let p = 0;
 		
@@ -149,7 +150,7 @@ export default class MML2SMF {
 		}
 		
 		while (p < mml.length) {
-			if (!isNextChar("cdefgabro<>lqutvpEBD@? \n\r\t")) {
+			if (!isNextChar("cdefgabro<>lqutvpkEBD@? \n\r\t")) {
 				error(`syntax error '${readChar()}'`);
 			}
 			let command = readChar();
@@ -166,7 +167,7 @@ export default class MML2SMF {
 					if (n < 0 || n >= abcdefg.length) {
 						break;
 					}
-					let note = (octave + 1) * 12 + abcdefg[n];
+					let note = (octave + 1) * 12 + abcdefg[n] + keyShift;
 					
 					if (isNextChar("+-")) {
 						let c = readChar();
@@ -176,6 +177,10 @@ export default class MML2SMF {
 						if (c === "-") {
 							note--;
 						}
+					}
+					
+					if (note < 0 || note > 127) {
+						error("illegal note number (0-127)");
 					}
 					
 					let stepTime = readNoteLength();
@@ -378,6 +383,19 @@ export default class MML2SMF {
 					// get start tick
 					this.startTick = currentTick;
 					break;
+					
+				case "k":
+					{
+						if (!isNextValue()) {
+							error("no key shift value");
+						}
+						keyShift = readValue();
+						
+						if (keyShift < -127 || keyShift > 127) {
+							error("illegal key shift value (-127-127)");
+						}
+						break; 
+					}
 			}
 		}
 		

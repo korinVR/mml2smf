@@ -42,6 +42,7 @@ Expression Controller|E\[0-127\]
 Program Change|@\[0-127\]
 Control Change|B\[0-119\],\[0-127\]
 Channel Aftertouch|D\[0-127\]
+Key Shift|k\[-127-127\]
 Next Track|;
 Tie|^
 

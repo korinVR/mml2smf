@@ -62,6 +62,7 @@ var MML2SMF = (function () {
 			var velocity = 100;
 
 			var q = 6;
+			var keyShift = 0;
 
 			var p = 0;
 
@@ -154,7 +155,7 @@ var MML2SMF = (function () {
 			}
 
 			while (p < mml.length) {
-				if (!isNextChar("cdefgabro<>lqutvpEBD@? \n\r\t")) {
+				if (!isNextChar("cdefgabro<>lqutvpkEBD@? \n\r\t")) {
 					error("syntax error '" + readChar() + "'");
 				}
 				var command = readChar();
@@ -171,7 +172,7 @@ var MML2SMF = (function () {
 						if (n < 0 || n >= abcdefg.length) {
 							break;
 						}
-						var note = (octave + 1) * 12 + abcdefg[n];
+						var note = (octave + 1) * 12 + abcdefg[n] + keyShift;
 
 						if (isNextChar("+-")) {
 							var c = readChar();
@@ -181,6 +182,10 @@ var MML2SMF = (function () {
 							if (c === "-") {
 								note--;
 							}
+						}
+
+						if (note < 0 || note > 127) {
+							error("illegal note number (0-127)");
 						}
 
 						var stepTime = readNoteLength();
@@ -380,6 +385,19 @@ var MML2SMF = (function () {
 						// get start tick
 						this.startTick = currentTick;
 						break;
+
+					case "k":
+						{
+							if (!isNextValue()) {
+								error("no key shift value");
+							}
+							keyShift = readValue();
+
+							if (keyShift < -127 || keyShift > 127) {
+								error("illegal key shift value (-127-127)");
+							}
+							break;
+						}
 				}
 			}
 
