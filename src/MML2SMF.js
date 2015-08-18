@@ -10,7 +10,7 @@ export default class MML2SMF {
 		}
 		
 		this.timebase = timebase;
-		let smfFormat = (trackNum == 1) ? 0 : 1;
+		let smfFormat = (trackNum === 1) ? 0 : 1;
 		
 		let smf = [
 			0x4d, 0x54, 0x68, 0x64,
@@ -22,8 +22,10 @@ export default class MML2SMF {
 			this.timebase & 0xff
 		];
 		
+		this.channel = 0;
+		
 		for (let i = 0; i < trackNum; i++) {
-			let trackData = this.createTrackData(trackMMLs[i], i);
+			let trackData = this.createTrackData(trackMMLs[i]);
 
 			const trackHeader = [
 				0x4d, 0x54, 0x72, 0x6b,
@@ -34,12 +36,17 @@ export default class MML2SMF {
 			];
 
 			smf = smf.concat(trackHeader, trackData);
+			this.channel++;
+			
+			if (this.channel > 15) {
+				throw new Error("Exceeded maximum MIDI channel (16)");
+			}
 		}
 		
 		return new Uint8Array(smf);
 	}
 	
-	createTrackData(mml, channel) {
+	createTrackData(mml) {
 		const abcdefg = [9, 11, 0, 2, 4, 5, 7];
 		
 		let trackData = [];
@@ -150,7 +157,7 @@ export default class MML2SMF {
 		}
 		
 		while (p < mml.length) {
-			if (!isNextChar("cdefgabro<>lqutvpkEBD@? \n\r\t")) {
+			if (!isNextChar("cdefgabro<>lqutvpkEBD@C? \n\r\t")) {
 				error(`syntax error '${readChar()}'`);
 			}
 			let command = readChar();
@@ -187,9 +194,9 @@ export default class MML2SMF {
 					let gateTime = Math.round(stepTime * q / 8);
 					
 					writeDeltaTick(restTick);
-					trackData.push(0x90 | channel, note, velocity);
+					trackData.push(0x90 | this.channel, note, velocity);
 					writeDeltaTick(gateTime);
-					trackData.push(0x80 | channel, note, 0);
+					trackData.push(0x80 | this.channel, note, 0);
 					restTick = stepTime - gateTime;
 					
 					currentTick += stepTime;
@@ -290,7 +297,7 @@ export default class MML2SMF {
 						}
 
 						writeDeltaTick(restTick);
-						trackData.push(0xb0 | channel, 7, volume);
+						trackData.push(0xb0 | this.channel, 7, volume);
 					}
 					break;
 				
@@ -305,7 +312,7 @@ export default class MML2SMF {
 						}
 						
 						writeDeltaTick(restTick);
-						trackData.push(0xb0 | channel, 10, pan + 64);
+						trackData.push(0xb0 | this.channel, 10, pan + 64);
 					}
 					break;
 				
@@ -320,64 +327,70 @@ export default class MML2SMF {
 						}
 
 						writeDeltaTick(restTick);
-						trackData.push(0xb0 | channel, 11, expression);
+						trackData.push(0xb0 | this.channel, 11, expression);
 					}
 					break;
 				
 				case "B":
-					if (!isNextValue()) {
-						error("no parameter");
-					}
-					let controlNumber = readValue();
-					
-					if (!isNextChar(",")) {
-						error("control change requires two parameter");
-					}
-					readChar();
-					
-					if (!isNextValue()) {
-						error("no value");
-					}
-					let value = readValue();
+					{
+						if (!isNextValue()) {
+							error("no parameter");
+						}
+						let controlNumber = readValue();
 
-					if (controlNumber < 0 || controlNumber > 119) {
-						error("control number is out of range (0-119)");
-					}
-					if (value < 0 || value > 127) {
-						error("controller value is out of range (0-127)");
-					}
+						if (!isNextChar(",")) {
+							error("control change requires two parameter");
+						}
+						readChar();
 
-					writeDeltaTick(restTick);
-					trackData.push(0xb0 | channel, controlNumber, value);
-					break;
+						if (!isNextValue()) {
+							error("no value");
+						}
+						let value = readValue();
+
+						if (controlNumber < 0 || controlNumber > 119) {
+							error("control number is out of range (0-119)");
+						}
+						if (value < 0 || value > 127) {
+							error("controller value is out of range (0-127)");
+						}
+
+						writeDeltaTick(restTick);
+						trackData.push(0xb0 | this.channel, controlNumber, value);
+						break;
+					}
 					
 				case "@":
-					if (!isNextValue()) {
-						error("no program number");
-					}
-					let programNumber = readValue();
+					{
+						if (!isNextValue()) {
+							error("no program number");
+						}
+						let programNumber = readValue();
 
-					if (programNumber < 0 || programNumber > 127) {
-						error("illegal program number (0-127)");
-					}
+						if (programNumber < 0 || programNumber > 127) {
+							error("illegal program number (0-127)");
+						}
 
-					writeDeltaTick(restTick);
-					trackData.push(0xc0 | channel, programNumber);
-					break;
+						writeDeltaTick(restTick);
+						trackData.push(0xc0 | this.channel, programNumber);
+						break;
+					}
 				
 				case "D":
-					if (!isNextValue()) {
-						error("no pressure value");
-					}
-					let pressure = readValue();
+					{
+						if (!isNextValue()) {
+							error("no pressure value");
+						}
+						let pressure = readValue();
 
-					if (pressure < 0 || pressure > 127) {
-						error("illegal pressure number (0-127)");
-					}
+						if (pressure < 0 || pressure > 127) {
+							error("illegal pressure number (0-127)");
+						}
 
-					writeDeltaTick(restTick);
-					trackData.push(0xd0 | channel, pressure);
-					break;
+						writeDeltaTick(restTick);
+						trackData.push(0xd0 | this.channel, pressure);
+						break;
+					}
 				
 				case "?":
 					// get start tick
@@ -395,6 +408,20 @@ export default class MML2SMF {
 							error("illegal key shift value (-127-127)");
 						}
 						break; 
+					}
+					
+				case "C":
+					{
+						if (!isNextValue()) {
+							error("no channel number");
+						}
+						let midiChannel = readValue();
+						
+						if (midiChannel < 1 || midiChannel > 16) {
+							error("illegal MIDI channel (1-16)");
+						}
+						this.channel = midiChannel - 1;
+						break;
 					}
 			}
 		}

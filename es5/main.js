@@ -66,7 +66,7 @@ if (argv.timebase) {
 
 // display usage
 if (!mml) {
-	console.log("\nmml2smf version 0.0.8 - MML to Standard MIDI File converter\n\nusage:\n\tmml2smf [MML file]\n\tmml2smf [MML file] -o [.mid file]\n\tmml2smf -m [MML] -o [.mid file]\noptions:\n\t--timebase [timebase] (default=480)\n");
+	console.log("\nmml2smf version 0.0.9 - MML to Standard MIDI File converter\n\nusage:\n\tmml2smf [MML file]\n\tmml2smf [MML file] -o [.mid file]\n\tmml2smf -m [MML] -o [.mid file]\noptions:\n\t--timebase [timebase] (default=480)\n");
 	process.exit();
 }
 

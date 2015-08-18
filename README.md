@@ -43,7 +43,8 @@ Program Change|@\[0-127\]
 Control Change|B\[0-119\],\[0-127\]
 Channel Aftertouch|D\[0-127\]
 Key Shift|k\[-127-127\]
-Next Track|;
+Set MIDI Channel|C\[1-16\]
+Next Track and MIDI Channel|;
 Tie|^
 
 ## Development

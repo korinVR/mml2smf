@@ -55,7 +55,7 @@ if (argv.timebase) {
 // display usage
 if (!mml) {
 	console.log(`
-mml2smf version 0.0.8 - MML to Standard MIDI File converter
+mml2smf version 0.0.9 - MML to Standard MIDI File converter
 
 usage:
 	mml2smf [MML file]
