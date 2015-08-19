@@ -1,6 +1,6 @@
 # MML to Standard MIDI File converter
 
-This module is created for in-development MIDI synthesizer [synthesis.js](https://github.com/KatsuomiK/synthesis.js), but it could be used for general use cases.
+This utility is created for in-development MIDI synthesizer [synthesis.js](https://github.com/KatsuomiK/synthesis.js), but it could be used for general use cases.
 
 The features are very limited for now.
 
@@ -23,10 +23,10 @@ $ mml2smf -m "t140 o5l8q7 ccggaag4 ffeeddc4; o4l8 cgegcgeg >b<gfg>b<gc4" -o test
 var MML2SMF = require("mml2smf");
 
 var mml2smf = new MML2SMF();
-var smf = mml2smf.convert("cdefg"); // Uint8Array
+var smf = mml2smf.convert("cdefg"); // returns Uint8Array
 ```
 
-## MML
+## MML ([Music Macro Language](https://en.wikipedia.org/wiki/Music_Macro_Language))
 
 command|MML
 -------|---
@@ -42,10 +42,11 @@ Expression Controller|E\[0-127\]
 Program Change|@\[0-127\]
 Control Change|B\[0-119\],\[0-127\]
 Channel Aftertouch|D\[0-127\]
-Key Shift|k\[-127-127\]
-Set MIDI Channel|C\[1-16\]
+Key Shift|k\[-127-127\] (0)
+Set MIDI Channel|C\[1-16\] (1)
 Next Track and MIDI Channel|;
 Tie|^
+Comment|//..., /\*...\*/
 
 ## Development
 

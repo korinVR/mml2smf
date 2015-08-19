@@ -85,6 +85,10 @@ var MML2SMF = (function () {
 				return mml.charAt(p++);
 			}
 
+			function isNextString(s) {
+				return mml.substr(p, s.length) === s;
+			}
+
 			function isNextValue() {
 				return isNextChar("0123456789.-");
 			}
@@ -162,7 +166,7 @@ var MML2SMF = (function () {
 			}
 
 			while (p < mml.length) {
-				if (!isNextChar("cdefgabro<>lqutvpkEBD@C? \n\r\t")) {
+				if (!isNextChar("cdefgabro<>lqutvpkEBD@C?/ \n\r\t")) {
 					error("syntax error '" + readChar() + "'");
 				}
 				var command = readChar();
@@ -423,6 +427,35 @@ var MML2SMF = (function () {
 								error("illegal MIDI channel (1-16)");
 							}
 							this.channel = midiChannel - 1;
+							break;
+						}
+
+					case "/":
+						// comment
+						{
+							if (isNextChar("*")) {
+								readChar();
+
+								while (!isNextString("*/")) {
+									if (p >= mml.length) {
+										error("comment is not closed");
+									}
+									readChar();
+								}
+								readChar();
+								readChar();
+							} else if (isNextChar("/")) {
+								readChar();
+
+								while (!isNextChar("\n")) {
+									if (p >= mml.length) {
+										break;
+									}
+									readChar();
+								}
+							} else {
+								error("syntax error");
+							}
 							break;
 						}
 				}

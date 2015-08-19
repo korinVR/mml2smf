@@ -80,6 +80,10 @@ export default class MML2SMF {
 			return mml.charAt(p++);
 		}
 		
+		function isNextString(s) {
+			return mml.substr(p, s.length) === s;
+		}
+		
 		function isNextValue() {
 			return isNextChar("0123456789.-");
 		}
@@ -157,7 +161,7 @@ export default class MML2SMF {
 		}
 		
 		while (p < mml.length) {
-			if (!isNextChar("cdefgabro<>lqutvpkEBD@C? \n\r\t")) {
+			if (!isNextChar("cdefgabro<>lqutvpkEBD@C?/ \n\r\t")) {
 				error(`syntax error '${readChar()}'`);
 			}
 			let command = readChar();
@@ -421,6 +425,35 @@ export default class MML2SMF {
 							error("illegal MIDI channel (1-16)");
 						}
 						this.channel = midiChannel - 1;
+						break;
+					}
+					
+				case "/":
+					// comment
+					{
+						if (isNextChar("*")) {
+							readChar();
+							
+							while (!isNextString("*/")) {
+								if (p >= mml.length) {
+									error("comment is not closed");
+								}
+								readChar();
+							}
+							readChar();
+							readChar();
+						} else if (isNextChar("/")) {
+							readChar();
+							
+							while (!isNextChar("\n")) {
+								if (p >= mml.length) {
+									break;
+								}
+								readChar();
+							}
+						} else {
+							error("syntax error");
+						}
 						break;
 					}
 			}
