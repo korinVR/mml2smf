@@ -1,6 +1,6 @@
 {
   "name": "mml2smf",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "MML to Standard MIDI File converter",
   "main": "es5/mml2smf.js",
   "bin": "es5/main.js",
@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "babel": "^5.8.21",
-    "mocha": "*",
-    "uglifyjs": "*"
+    "mocha": "*"
   }
 }

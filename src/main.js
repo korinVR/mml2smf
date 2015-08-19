@@ -5,8 +5,6 @@
 import fs from "fs";
 import minimist from "minimist";
 
-import MML2SMF from "./MML2SMF";
-
 // analyze command line
 let argv = minimist(global.process.argv.slice(2));
 
@@ -55,7 +53,7 @@ if (argv.timebase) {
 // display usage
 if (!mml) {
 	console.log(`
-mml2smf version 0.0.9 - MML to Standard MIDI File converter
+mml2smf version 0.0.10 - MML to Standard MIDI File converter
 
 usage:
 	mml2smf [MML file]
@@ -68,16 +66,20 @@ options:
 }
 	
 // convert
-let mml2smf = new MML2SMF();
-let swf;
+import mml2smf from "./mml2smf";
+
+let smf;
 
 try {
-	swf = mml2smf.convert(mml, timebase);
+	let opts = {
+		timebase: timebase
+	};
+	smf = mml2smf(mml, opts);
 } catch (e) {
 	console.log("error: " + e.message);
 	process.exit(0);
 }
 
-let buffer = new Buffer(swf);
+let buffer = new Buffer(smf);
 fs.writeFile(smfFile, buffer);
 

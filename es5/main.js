@@ -15,11 +15,14 @@ var _minimist = require("minimist");
 
 var _minimist2 = _interopRequireDefault(_minimist);
 
-var _MML2SMF = require("./MML2SMF");
-
-var _MML2SMF2 = _interopRequireDefault(_MML2SMF);
-
 // analyze command line
+
+// convert
+
+var _mml2smf = require("./mml2smf");
+
+var _mml2smf2 = _interopRequireDefault(_mml2smf);
+
 var argv = (0, _minimist2["default"])(global.process.argv.slice(2));
 
 function changeExtension(filename, ext) {
@@ -66,20 +69,21 @@ if (argv.timebase) {
 
 // display usage
 if (!mml) {
-	console.log("\nmml2smf version 0.0.9 - MML to Standard MIDI File converter\n\nusage:\n\tmml2smf [MML file]\n\tmml2smf [MML file] -o [.mid file]\n\tmml2smf -m [MML] -o [.mid file]\noptions:\n\t--timebase [timebase] (default=480)\n");
+	console.log("\nmml2smf version 0.0.10 - MML to Standard MIDI File converter\n\nusage:\n\tmml2smf [MML file]\n\tmml2smf [MML file] -o [.mid file]\n\tmml2smf -m [MML] -o [.mid file]\noptions:\n\t--timebase [timebase] (default=480)\n");
 	process.exit();
 }
 
-// convert
-var mml2smf = new _MML2SMF2["default"]();
-var swf = undefined;
+var smf = undefined;
 
 try {
-	swf = mml2smf.convert(mml, timebase);
+	var opts = {
+		timebase: timebase
+	};
+	smf = (0, _mml2smf2["default"])(mml, opts);
 } catch (e) {
 	console.log("error: " + e.message);
 	process.exit(0);
 }
 
-var buffer = new Buffer(swf);
+var buffer = new Buffer(smf);
 _fs2["default"].writeFile(smfFile, buffer);
