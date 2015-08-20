@@ -13,32 +13,31 @@ export default function mml2smf(mml, opts) {
 		throw new Error("over 16 tracks");
 	}
 	
-	let smfFormat = (trackNum === 1) ? 0 : 1;
+	let format = trackNum > 1 ? 1 : 0;
 	
-	let smf = [
-		0x4d, 0x54, 0x68, 0x64,
-		0x00, 0x00, 0x00, 0x06,
-		0x00, smfFormat, 
-		(trackNum >> 8) & 0xff,
-		trackNum & 0xff,
-		(timebase >> 8) & 0xff,
-		timebase & 0xff
-	];
+	let smf = [0x4d, 0x54, 0x68, 0x64];
+	
+	function pushUint16(value) {
+		smf.push((value >> 8) & 0xff, value & 0xff);
+	}
+	
+	function pushUint32(value) {
+		smf.push((value >> 24) & 0xff, (value >> 16) & 0xff, (value >> 8) & 0xff, value & 0xff);
+	}
+	
+	pushUint32(6);
+	pushUint16(format);
+	pushUint16(trackNum);
+	pushUint16(timebase);
 	
 	let channel = 0;
 	
 	for (let i = 0; i < trackNum; i++) {
 		let trackData = createTrackData(trackMMLs[i]);
 
-		const trackHeader = [
-			0x4d, 0x54, 0x72, 0x6b,
-			(trackData.length >> 24) & 0xff,
-			(trackData.length >> 16) & 0xff,
-			(trackData.length >> 8) & 0xff,
-			trackData.length & 0xff
-		];
-
-		smf = smf.concat(trackHeader, trackData);
+		smf.push(0x4d, 0x54, 0x72, 0x6b);
+		pushUint32(trackData.length);
+		smf = smf.concat(trackData);
 		channel++;
 		
 		if (channel > 15) {

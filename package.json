@@ -12,7 +12,7 @@
     "build": "babel src --out-dir es5",
     "watch": "babel src --out-dir es5 --watch",
     "start": "node es5/main.js",
-    "test": "mocha --compilers js:babel/register"
+    "test": "mocha --watch --reporter Min --compilers js:babel/register"
   },
   "dependencies": {
     "minimist": "*"
