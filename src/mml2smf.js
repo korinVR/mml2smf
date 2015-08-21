@@ -71,12 +71,18 @@ export default function mml2smf(mml, opts) {
 		let keyShift = 0;
 		
 		let p = 0;
+		// error column
+		let colError = 0;
+		
+		function peekChar() {
+			return mml.charAt(p);
+		}
 		
 		function isNextChar(candidates) {
 			if (p >= mml.length) {
 				return false;
 			}
-			let c = mml.charAt(p);
+			let c = peekChar();
 			return candidates.indexOf(c) >= 0;
 		}
 		
@@ -139,7 +145,7 @@ export default function mml2smf(mml, opts) {
 		}
 		
 		function error(message) {
-			throw new Error(`char ${p} : ${message}`);
+			throw new Error(`col ${colError + 1} : ${message}`);
 		}
 		
 		function writeDeltaTick(tick) {
@@ -165,6 +171,7 @@ export default function mml2smf(mml, opts) {
 		}
 		
 		while (p < mml.length) {
+			colError = p;
 			if (!isNextChar("cdefgabro<>lqutvpkEBD@C?/ \n\r\t")) {
 				error(`syntax error '${readChar()}'`);
 			}
@@ -220,6 +227,7 @@ export default function mml2smf(mml, opts) {
 					break;
 	
 				case "o":
+					colError = p;
 					if (!isNextValue()) {
 						error("no octave number");
 					} else {
@@ -255,6 +263,7 @@ export default function mml2smf(mml, opts) {
 					
 				case "q":
 					{
+						colError = p;
 						if (isNextValue()) {
 							q = readValue();
 							if (q < 1 || q > 8) {
@@ -266,6 +275,7 @@ export default function mml2smf(mml, opts) {
 					
 				case "u":
 					{
+						colError = p;
 						if (isNextValue()) {
 							velocity = readValue();
 							if (velocity < 0 || velocity > 127) {
@@ -276,6 +286,7 @@ export default function mml2smf(mml, opts) {
 					break;
 	
 				case "t":
+					colError = p;
 					if (!isNextValue()) {
 						error("no tempo number");
 					} else {
@@ -295,6 +306,7 @@ export default function mml2smf(mml, opts) {
 					break;
 				
 				case "v":
+					colError = p;
 					if (!isNextValue()) {
 						error("no volume value");
 					} else {
@@ -310,6 +322,7 @@ export default function mml2smf(mml, opts) {
 					break;
 				
 				case "p":
+					colError = p;
 					if (!isNextValue()) {
 						error("no panpot value");
 					} else {
@@ -325,6 +338,7 @@ export default function mml2smf(mml, opts) {
 					break;
 				
 				case "E":
+					colError = p;
 					if (!isNextValue()) {
 						error("no expression value");
 					} else {
@@ -341,24 +355,26 @@ export default function mml2smf(mml, opts) {
 				
 				case "B":
 					{
+						colError = p;
 						if (!isNextValue()) {
 							error("no parameter");
 						}
 						let controlNumber = readValue();
-	
+						if (controlNumber < 0 || controlNumber > 119) {
+							error("control number is out of range (0-119)");
+						}
+						
+						colError = p;
 						if (!isNextChar(",")) {
 							error("control change requires two parameter");
 						}
 						readChar();
-	
+
+						colError = p;
 						if (!isNextValue()) {
 							error("no value");
 						}
 						let value = readValue();
-	
-						if (controlNumber < 0 || controlNumber > 119) {
-							error("control number is out of range (0-119)");
-						}
 						if (value < 0 || value > 127) {
 							error("controller value is out of range (0-127)");
 						}
@@ -370,11 +386,11 @@ export default function mml2smf(mml, opts) {
 					
 				case "@":
 					{
+						colError = p;
 						if (!isNextValue()) {
 							error("no program number");
 						}
 						let programNumber = readValue();
-	
 						if (programNumber < 0 || programNumber > 127) {
 							error("illegal program number (0-127)");
 						}
@@ -386,11 +402,11 @@ export default function mml2smf(mml, opts) {
 				
 				case "D":
 					{
+						colError = p;
 						if (!isNextValue()) {
 							error("no pressure value");
 						}
 						let pressure = readValue();
-	
 						if (pressure < 0 || pressure > 127) {
 							error("illegal pressure number (0-127)");
 						}
@@ -407,11 +423,11 @@ export default function mml2smf(mml, opts) {
 					
 				case "k":
 					{
+						colError = p;
 						if (!isNextValue()) {
 							error("no key shift value");
 						}
 						keyShift = readValue();
-						
 						if (keyShift < -127 || keyShift > 127) {
 							error("illegal key shift value (-127-127)");
 						}
@@ -420,11 +436,11 @@ export default function mml2smf(mml, opts) {
 					
 				case "C":
 					{
+						colError = p;
 						if (!isNextValue()) {
 							error("no channel number");
 						}
 						let midiChannel = readValue();
-						
 						if (midiChannel < 1 || midiChannel > 16) {
 							error("illegal MIDI channel (1-16)");
 						}
@@ -435,6 +451,7 @@ export default function mml2smf(mml, opts) {
 				case "/":
 					// comment
 					{
+						colError = p - 1;
 						if (isNextChar("*")) {
 							readChar();
 							
@@ -456,6 +473,7 @@ export default function mml2smf(mml, opts) {
 								readChar();
 							}
 						} else {
+							colError = p;
 							error("syntax error");
 						}
 						break;
