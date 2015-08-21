@@ -17,18 +17,18 @@ export default function mml2smf(mml, opts) {
 	
 	let smf = [0x4d, 0x54, 0x68, 0x64];
 	
-	function pushUint16(value) {
+	function write2bytes(value) {
 		smf.push((value >> 8) & 0xff, value & 0xff);
 	}
 	
-	function pushUint32(value) {
+	function write4bytes(value) {
 		smf.push((value >> 24) & 0xff, (value >> 16) & 0xff, (value >> 8) & 0xff, value & 0xff);
 	}
 	
-	pushUint32(6);
-	pushUint16(format);
-	pushUint16(trackNum);
-	pushUint16(timebase);
+	write4bytes(6);
+	write2bytes(format);
+	write2bytes(trackNum);
+	write2bytes(timebase);
 	
 	let channel = 0;
 	
@@ -36,7 +36,7 @@ export default function mml2smf(mml, opts) {
 		let trackData = createTrackData(trackMMLs[i]);
 
 		smf.push(0x4d, 0x54, 0x72, 0x6b);
-		pushUint32(trackData.length);
+		write4bytes(trackData.length);
 		smf = smf.concat(trackData);
 		channel++;
 		
@@ -116,6 +116,10 @@ export default function mml2smf(mml, opts) {
 			return parseInt(s);
 		}
 		
+		function write(...data) {
+			trackData = trackData.concat(data);
+		}
+		
 		function readNoteLength() {
 			let totalStepTime = 0;
 			
@@ -166,7 +170,7 @@ export default function mml2smf(mml, opts) {
 				if (stack.length > 0) {
 					b |= 0x80;
 				}
-				trackData.push(b);
+				write(b);
 			}
 		}
 		
@@ -209,9 +213,9 @@ export default function mml2smf(mml, opts) {
 					let gateTime = Math.round(stepTime * q / 8);
 					
 					writeDeltaTick(restTick);
-					trackData.push(0x90 | channel, note, velocity);
+					write(0x90 | channel, note, velocity);
 					writeDeltaTick(gateTime);
-					trackData.push(0x80 | channel, note, 0);
+					write(0x80 | channel, note, 0);
 					restTick = stepTime - gateTime;
 					
 					currentTick += stepTime;
@@ -298,7 +302,7 @@ export default function mml2smf(mml, opts) {
 						}
 	
 						writeDeltaTick(restTick);
-						trackData.push(0xff, 0x51, 0x03,
+						write(0xff, 0x51, 0x03,
 							(quarterMicroseconds >> 16) & 0xff,
 							(quarterMicroseconds >> 8) & 0xff,
 							(quarterMicroseconds) & 0xff);
@@ -317,7 +321,7 @@ export default function mml2smf(mml, opts) {
 						}
 	
 						writeDeltaTick(restTick);
-						trackData.push(0xb0 | channel, 7, volume);
+						write(0xb0 | channel, 7, volume);
 					}
 					break;
 				
@@ -333,7 +337,7 @@ export default function mml2smf(mml, opts) {
 						}
 						
 						writeDeltaTick(restTick);
-						trackData.push(0xb0 | channel, 10, pan + 64);
+						write(0xb0 | channel, 10, pan + 64);
 					}
 					break;
 				
@@ -349,7 +353,7 @@ export default function mml2smf(mml, opts) {
 						}
 	
 						writeDeltaTick(restTick);
-						trackData.push(0xb0 | channel, 11, expression);
+						write(0xb0 | channel, 11, expression);
 					}
 					break;
 				
@@ -380,7 +384,7 @@ export default function mml2smf(mml, opts) {
 						}
 	
 						writeDeltaTick(restTick);
-						trackData.push(0xb0 | channel, controlNumber, value);
+						write(0xb0 | channel, controlNumber, value);
 						break;
 					}
 					
@@ -396,7 +400,7 @@ export default function mml2smf(mml, opts) {
 						}
 	
 						writeDeltaTick(restTick);
-						trackData.push(0xc0 | channel, programNumber);
+						write(0xc0 | channel, programNumber);
 						break;
 					}
 				
@@ -412,7 +416,7 @@ export default function mml2smf(mml, opts) {
 						}
 	
 						writeDeltaTick(restTick);
-						trackData.push(0xd0 | channel, pressure);
+						write(0xd0 | channel, pressure);
 						break;
 					}
 				
