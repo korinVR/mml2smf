@@ -1,6 +1,6 @@
 {
   "name": "mml2smf",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "MML to Standard MIDI File converter",
   "main": "es5/mml2smf.js",
   "bin": "es5/main.js",
@@ -11,6 +11,7 @@
   "scripts": {
     "build": "babel src --out-dir es5",
     "watch": "babel src --out-dir es5 --watch",
+    "build:parser": "pegjs parser/mml.pegjs parser/parser.js",
     "start": "node es5/main.js",
     "test": "mocha --watch --reporter Min --compilers js:babel/register"
   },
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "babel": "^5.8.21",
-    "mocha": "*"
+    "mocha": "*",
+    "pegjs": "^0.8.0"
   }
 }
