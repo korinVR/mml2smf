@@ -8,7 +8,7 @@ _ = [ \t\r\n]*
 
 command
     = comment / note / tie / rest / octave / octave_up / octave_down / 
-    note_length / gate_time / velocity / volume / pan / expression / control_change
+    note_length / gate_time / velocity / volume / pan / expression / control_change /
     program_change / channel_aftertouch /
     tempo / start_point / key_shift / set_midi_channel
 
@@ -94,7 +94,7 @@ expression
     }
 
 control_change
-    = _ "B" _ number:$([0-9]+) _ value:$([0-9]+) _
+    = _ "B" _ number:$([0-9]+) _ "," _ value:$([0-9]+) _
     {
         if (number < 0 || number > 119) {
             error("control number is out of range (0-127)");
