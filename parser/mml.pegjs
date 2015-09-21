@@ -24,6 +24,10 @@ tie
     = _ "^" _ length:$([0-9]*) _ dots:"."* _
     { return { command: "tie", length: +length, dots: dots }; }
 
+slur
+    = _ "&" _
+    { return { command: "slur" }; }
+
 rest
     = _ "r" _ length:$([0-9]*) _ dots:"."* _
     { return { command: "rest", length: +length, dots: dots }; }
