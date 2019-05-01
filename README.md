@@ -67,7 +67,7 @@ MIT
 
 # Author
 
-Katsuomi Kobayashi ([@KatsuomiK](https://twitter.com/KatsuomiK) / [@k0rin](https://twitter.com/k0rin))
+Katsuomi Kobayashi ([@korinVR](https://twitter.com/korinVR) / [@korinVR_en](https://twitter.com/korinVR_en))
 
 https://framesynthesis.com/
 
