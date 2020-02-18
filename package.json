@@ -1,26 +1,25 @@
 {
   "name": "mml2smf",
-  "version": "0.0.11",
+  "version": "0.3.0",
   "description": "MML to Standard MIDI File converter",
-  "main": "es5/mml2smf.js",
-  "bin": "es5/main.js",
+  "main": "src/mml2smf.mjs",
+  "bin": "src/main.mjs",
   "author": "Katsuomi Kobayashi",
-  "repository": "https://github.com/KatsuomiK/mml2smf",
-  "homepage": "http://framesynthesis.com/",
+  "repository": "https://github.com/korinVR/mml2smf",
+  "homepage": "https://framesynthesis.com/",
   "license": "MIT",
   "scripts": {
-    "build": "babel src --out-dir es5",
-    "watch": "babel src --out-dir es5 --watch",
-    "build:parser": "pegjs parser/mml.pegjs parser/parser.js",
-    "start": "node es5/main.js",
-    "test": "mocha --watch --reporter Min --compilers js:babel/register"
+    "build": "webpack",
+    "build:parser": "pegjs -o parser/parser.js parser/mml.pegjs",
+    "start": "node src/main.mjs",
+    "test": "mocha test/test.mjs"
   },
   "dependencies": {
     "minimist": "*"
   },
   "devDependencies": {
-    "babel": "^5.8.21",
-    "mocha": "*",
-    "pegjs": "^0.8.0"
+    "mocha": "^7.0.0-esm1",
+    "pegjs": "*",
+    "standard": "^14.3.1"
   }
 }

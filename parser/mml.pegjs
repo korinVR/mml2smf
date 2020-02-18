@@ -1,6 +1,6 @@
 start = track+
 
-track = (commands:command*) next_track { return commands; }
+track = commands:command* next_track { return commands; }
 
 next_track = _ ";" _ { return null; }
 

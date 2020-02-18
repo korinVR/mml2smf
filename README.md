@@ -1,6 +1,6 @@
 # MML to Standard MIDI File converter
 
-This utility is created for in-development MIDI synthesizer [synthesis.js](https://github.com/KatsuomiK/synthesis.js), but it can be used for general use cases.
+This utility is created for in-development MIDI synthesizer [synthesis.js](https://github.com/korinVR/synthesis.js), but it can be used for general use cases.
 
 The features are very limited for now.
 
@@ -55,10 +55,10 @@ To launch:
 $ npm start
 ```
 
-To watch:
+To test:
 
 ```bash
-$ npm run watch
+$ npm run test
 ```
 
 # License
