@@ -40,9 +40,7 @@ octave
         }
         return {
             command: "octave",
-            number: +number,
-            line: line(),
-            column: column()
+            number: +number
         };
     }
 

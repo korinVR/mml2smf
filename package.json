@@ -1,6 +1,6 @@
 {
   "name": "mml2smf",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "MML to Standard MIDI File converter",
   "main": "src/mml2smf.mjs",
   "bin": "src/main.mjs",
@@ -9,7 +9,6 @@
   "homepage": "https://framesynthesis.com/",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
     "build:parser": "pegjs -o parser/parser.js parser/mml.pegjs",
     "start": "node src/main.mjs",
     "test": "mocha test/test.mjs"

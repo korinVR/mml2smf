@@ -62,4 +62,10 @@ describe('mml2smf', function () {
       hex2array('00 92 43 64 82 68 82 43 00'))
     assert.deepEqual(mml2smf(mml), smf)
   })
+
+  it('octave change', function () {
+    const mml = 'o5c'
+    const smf = createSMF(480, hex2array('00 90 48 64 82 68 80 48 00'))
+    assert.deepEqual(mml2smf(mml), smf)
+  })
 })
