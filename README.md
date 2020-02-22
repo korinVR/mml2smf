@@ -20,9 +20,9 @@ $ mml2smf -m "t140 o5l8q7 ccggaag4 ffeeddc4; o4l8 cgegcgeg >b<gfg>b<gc4" -o test
 ### From JavaScript
 
 ```js
-let mml2smf = require("mml2smf");
+import mml2smf from 'mml2smf'
 
-let smf = mml2smf("cdefg"); // returns Uint8Array
+const smf = mml2smf('cdefg') // returns Uint8Array
 ```
 
 ## MML ([Music Macro Language](https://en.wikipedia.org/wiki/Music_Macro_Language))
