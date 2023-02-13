@@ -258,6 +258,8 @@ export default function mml2smf (mml, opts) {
 
       p++
     }
+    writeDeltaTick(0)
+    write(0xff, 0x2f, 0x00)
 
     return trackData
   }
